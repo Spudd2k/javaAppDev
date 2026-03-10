@@ -12,8 +12,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+
+//all my added UI imports
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 public class CardLayoutFrame extends JFrame {
 
@@ -22,12 +25,19 @@ public class CardLayoutFrame extends JFrame {
     private JPanel usernamePanel;
     private JPanel gamePanel;
     private JPanel resultPanel;
+    private JPanel genrePanel;
 
     private JButton startButton;
     private JButton usernameButton;
     private JButton playButton;
     private JButton nextButton;
     private JButton[] optionButtons = new JButton[4];
+
+    private JButton historyButton;
+    private JButton sportsButton;
+    private JButton entertainmentButton;
+    private JButton generalButton;
+
 
     private CardLayout cardLayout;
 
@@ -44,7 +54,7 @@ public class CardLayoutFrame extends JFrame {
 
     public CardLayoutFrame() {
         currentQuestionIdx = 0;
-        importQuestions();
+
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
@@ -62,12 +72,51 @@ public class CardLayoutFrame extends JFrame {
         playButton.addActionListener(handler);
         usernameButton.addActionListener(handler);
 
+        historyButton.addActionListener(handler);
+        sportsButton.addActionListener(handler);
+        entertainmentButton.addActionListener(handler);
+        generalButton.addActionListener(handler);
+
         add(cardPanel);
     }
 
     private void createGenrePanel(){
         genrePanel = new JPanel(new GridBagLayout());
         genrePanel.setBackground(new Color(74,74,74));
+
+        GridBagConstraints genreGBC = new GridBagConstraints();
+        genreGBC.insets = new Insets(10, 10, 10, 10);
+
+        // Title label
+        JLabel genreLabel = new JLabel("Select a Genre:");
+        genreLabel.setFont(new Font("Impact", Font.BOLD, 36));
+        genreLabel.setForeground(Color.WHITE);
+        genreGBC.gridy = 0;
+        genrePanel.add(genreLabel, genreGBC);
+
+        // Genre buttons
+        historyButton = new JButton("History");
+        sportsButton = new JButton("Sports");
+        entertainmentButton = new JButton("Entertainment");
+        generalButton = new JButton("General");
+
+        // Style each button
+        for (JButton btn : new JButton[]{historyButton, sportsButton, entertainmentButton, generalButton}) {
+            btn.setFont(new Font("Impact", Font.PLAIN, 24));
+            btn.setPreferredSize(new Dimension(250, 60));
+            btn.setBackground(new Color(107, 129, 150)); // blue
+            btn.setForeground(Color.WHITE);
+            btn.setOpaque(true);
+            btn.setBorderPainted(false);
+        }
+
+        // Add buttons vertically
+        genreGBC.gridy = 1; genrePanel.add(historyButton, genreGBC);
+        genreGBC.gridy = 2; genrePanel.add(sportsButton, genreGBC);
+        genreGBC.gridy = 3; genrePanel.add(entertainmentButton, genreGBC);
+        genreGBC.gridy = 4; genrePanel.add(generalButton, genreGBC);
+
+        cardPanel.add(genrePanel, "P");
     }
     private void createUsernamePanel() {
 
@@ -78,6 +127,7 @@ public class CardLayoutFrame extends JFrame {
         centerPanel.setBackground(new Color(74, 74, 74));
 
         inputField = new JTextField(10);
+        inputField.setForeground(new Color(64,64,64));
         inputField.setFont(new Font("Impact", Font.ITALIC, 24));
 
         JLabel usernameLabel = new JLabel("Enter a username: ");
@@ -105,7 +155,7 @@ public class CardLayoutFrame extends JFrame {
         resultPanel = new JPanel(new GridBagLayout());
         resultPanel.setBackground(new Color(74,74,74));
 
-        JLabel resultLabel = new JLabel("Results Screen: Good Job " + username);
+        JLabel resultLabel = new JLabel("Results Screen: Good Job, " + username);
         resultLabel.setFont(new Font("Impact", Font.BOLD, 40));
         resultLabel.setForeground(Color.WHITE);
 
@@ -113,6 +163,42 @@ public class CardLayoutFrame extends JFrame {
         resultsGBC.anchor = GridBagConstraints.NORTH;
         resultsGBC.weighty = 1.0;
         resultsGBC.gridy = 0;
+
+        // Play again button
+        JButton playAgainButton = new JButton("Play Again");
+        playAgainButton.setFont(new Font("Impact", Font.PLAIN, 24));
+        playAgainButton.setPreferredSize(new Dimension(200, 60));
+        playAgainButton.setBackground(new Color(107, 129, 150));
+        playAgainButton.setForeground(Color.WHITE);
+        playAgainButton.setOpaque(true);
+        playAgainButton.setBorderPainted(false);
+
+        // Change username button
+        JButton changeUsernameButton = new JButton("Change Username");
+        changeUsernameButton.setFont(new Font("Impact", Font.PLAIN, 24));
+        changeUsernameButton.setPreferredSize(new Dimension(250, 60));
+        changeUsernameButton.setBackground(new Color(107, 129, 150));
+        changeUsernameButton.setForeground(Color.WHITE);
+        changeUsernameButton.setOpaque(true);
+        changeUsernameButton.setBorderPainted(false);
+
+        // Button panel at bottom
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        bottomPanel.setBackground(new Color(74, 74, 74));
+        bottomPanel.add(playAgainButton);
+        bottomPanel.add(changeUsernameButton);
+
+        GridBagConstraints bottomGBC = new GridBagConstraints();
+        bottomGBC.anchor = GridBagConstraints.SOUTH;
+        bottomGBC.weighty = 1.0;
+        bottomGBC.gridy = 1;
+        resultPanel.add(bottomPanel, bottomGBC);
+
+        // Button actions
+        playAgainButton.addActionListener(e -> cardLayout.show(cardPanel, "P"));
+        changeUsernameButton.addActionListener(e -> cardLayout.show(cardPanel, "U"));
+
+        cardPanel.add(resultPanel, "R");
 
         resultPanel.add(resultLabel, resultsGBC);
         cardPanel.add(resultPanel, "R");
@@ -138,27 +224,27 @@ public class CardLayoutFrame extends JFrame {
         welcomePanel = new JPanel(new BorderLayout());
         welcomePanel.setBackground(new Color(74, 74, 74)); //dark gray background
         JLabel title = new JLabel("Welcome Screen", SwingConstants.CENTER);
-        title.setForeground(new Color(203, 203, 203)); // gold color
-        title.setOpaque(false); // make label background transparent
+        title.setForeground(new Color(203, 203, 203));
+        title.setOpaque(false);
         title.setFont(new Font("Impact", Font.BOLD, 70));
         welcomePanel.add(title, BorderLayout.CENTER);
         startButton = new JButton("Start game!");
         startButton.setBackground(new Color(109, 129, 150));  //soft navy blue
-        startButton.setForeground(Color.WHITE);              // white text
+        startButton.setForeground(Color.WHITE);
         startButton.setOpaque(true);
-        startButton.setBorderPainted(false);                 // removes default border for cleaner look
+        startButton.setBorderPainted(false);
         startButton.setFont(new Font("Impact", Font.BOLD, 30));
         welcomePanel.add(startButton, BorderLayout.SOUTH);
         cardPanel.add(welcomePanel, "W");
     }
+
     private class ButtonHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == startButton) {
                 cardLayout.show(cardPanel, "U");
             } else if (e.getSource() == playButton) {
-                loadNextQuestions();
-                cardLayout.show(cardPanel, "G");
+                cardLayout.show(cardPanel, "P");
             } else if (e.getSource() == nextButton) {
 //Results screen
                 CreateResultsPanel();
@@ -168,8 +254,14 @@ public class CardLayoutFrame extends JFrame {
                 JOptionPane.showMessageDialog(null,
                         "Welcome " + username + "!");
             }
+            //This else if is temporary so i can see the results panel before we add all the questions
+            else if (e.getSource() == historyButton){
+                CreateResultsPanel();
+                cardLayout.show(cardPanel, "R");
+            }
         }
     }
+
     private class OptionButtonHandler implements ActionListener {
         private int index;
         public OptionButtonHandler(int index) {
@@ -179,33 +271,7 @@ public class CardLayoutFrame extends JFrame {
         public void actionPerformed(ActionEvent e) {
         }
     }
-    private void importQuestions() {
-        questionPair = new ArrayList<>();
-        correctAnswers = new ArrayList<>();
-        questionPair.add(List.of(
-                "Question 1: What do we refer to BST in 4319?",
-                "British Summer Time",
-                "Breadth Search Tree",
-                "Binary Search Tree",
-                "None of above"
-        ));
-        correctAnswers.add(2);
-        questionPair.add(List.of("Which class belongs to Java Swing?",
-                "NumberFormatException",
-                "String",
-                "Graphics",
-                "None of above"));
-        correctAnswers.add(3);
-        questionPair.add(List.of("What is the capital of France?",
-                "Paris", "London", "Berlin", "Rome"));
-        correctAnswers.add(0);
-        questionPair.add(List.of("Which planet is known as the Red Planet?",
-                "Earth", "Venus", "Mars", "Jupiter"));
-        correctAnswers.add(2);
-        questionPair.add(List.of("Recursion always needs a?",
-                "Loop", "Base Case", "Queue", "Stack"));
-        correctAnswers.add(1);
-    }
+
     private void loadNextQuestions() {
         if (questionPair == null ||
                 currentQuestionIdx > questionPair.size() -1) {
