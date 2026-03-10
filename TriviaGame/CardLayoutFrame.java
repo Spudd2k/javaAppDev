@@ -7,16 +7,19 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+// custom ui stuff
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+
 
 public class CardLayoutFrame extends JFrame {
 
@@ -48,30 +51,39 @@ public class CardLayoutFrame extends JFrame {
     private int currentQuestionIdx = 0;
     private int score = 0;
 
-    // category-as-set state
+    // category stuff
     private Map<String, List<Question>> questionsByCategory;
     private List<String> categories;
     private List<Question> questions; // current chosen set
     private String selectedCategory = "";
 
+    // timer stuff
+    private javax.swing.Timer questionTimer;
+    private int timeRemaining;
+    private JLabel timerLabel;
+
+
     public CardLayoutFrame() {
-        // ---- load questions grouped by category ----
-        // NOTE: change path to match where your file really is
-        QuestionLoader loader = new QuestionLoader("/Users/claykim/Desktop/ECE4319/javaAppDev/TriviaGame/questions.txt");
+
+        //pulls questions from .txt file
+        QuestionLoader loader = new QuestionLoader("C:/Users/dalto/Downloads/Year 4 Term 2/Java/TriviaGame/questions.txt");
         questionsByCategory = loader.loadByCategory();
 
-        categories = new ArrayList<>(questionsByCategory.keySet()); // preserves file order if loader uses LinkedHashMap
-        questions = new ArrayList<>(); // none selected yet
+        categories = new ArrayList<>(questionsByCategory.keySet());
+        questions = new ArrayList<>();
 
-        // ---- setup card layout ----
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
         createWelcomePanel();
+
         createUsernamePanel();
+
         createGenrePanel();
+
         createGamePanel();
-        createResultPanel(); // create once
+
+        createResultPanel();
 
         ButtonHandler handler = new ButtonHandler();
         startButton.addActionListener(handler);
@@ -80,26 +92,22 @@ public class CardLayoutFrame extends JFrame {
         usernameButton.addActionListener(handler);
 
         add(cardPanel);
-
-        // Frame settings (so it actually shows)
-        setTitle("Trivia Game");
-        setSize(900, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setVisible(true);
     }
 
-    // ---------------- UI PANELS ----------------
+    // all ui panels
 
+    // welcome panel------------------------------------------------------------------------------------------------
     private void createWelcomePanel() {
         welcomePanel = new JPanel(new BorderLayout());
-        welcomePanel.setBackground(new Color(74, 74, 74)); // dark gray
+        welcomePanel.setBackground(new Color(74, 74, 74)); // dark gray background
 
+        // creates title screen welcome text
         JLabel title = new JLabel("Welcome Screen", SwingConstants.CENTER);
-        title.setForeground(new Color(203, 203, 203));
+        title.setForeground(Color.WHITE);
         title.setFont(new Font("Impact", Font.BOLD, 70));
         welcomePanel.add(title, BorderLayout.CENTER);
 
+        // start button
         startButton = new JButton("Start game!");
         startButton.setBackground(new Color(109, 129, 150)); // soft navy blue
         startButton.setForeground(Color.WHITE);
@@ -111,14 +119,16 @@ public class CardLayoutFrame extends JFrame {
         cardPanel.add(welcomePanel, "W");
     }
 
+    // username panel------------------------------------------------------------------------------------------------
     private void createUsernamePanel() {
         usernamePanel = new JPanel(new GridBagLayout());
         usernamePanel.setBackground(new Color(74, 74, 74));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10,10,10,10);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
+        // puts inset pixel margins
+        GridBagConstraints usernameGBC = new GridBagConstraints();
+        usernameGBC.insets = new Insets(10,10,10,10);
+        usernameGBC.gridx = 0;
+        usernameGBC.gridy = 0;
 
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerPanel.setBackground(new Color(74, 74, 74));
@@ -127,6 +137,7 @@ public class CardLayoutFrame extends JFrame {
         usernameLabel.setForeground(Color.WHITE);
         usernameLabel.setFont(new Font("Impact", Font.PLAIN, 24));
 
+        // username input text field
         inputField = new JTextField(10);
         inputField.setForeground(new Color(64, 64, 64));
         inputField.setFont(new Font("Impact", Font.ITALIC, 24));
@@ -137,9 +148,9 @@ public class CardLayoutFrame extends JFrame {
         centerPanel.add(inputField);
         centerPanel.add(usernameButton);
 
-        usernamePanel.add(centerPanel, gbc);
+        usernamePanel.add(centerPanel, usernameGBC);
 
-        gbc.gridy = 1;
+        usernameGBC.gridy = 1;
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.setBackground(new Color(74, 74, 74));
         playButton = new JButton("Play!");
@@ -150,12 +161,12 @@ public class CardLayoutFrame extends JFrame {
         playButton.setBorderPainted(false);
 
         buttonPanel.add(playButton);
-        usernamePanel.add(buttonPanel, gbc);
+        usernamePanel.add(buttonPanel, usernameGBC);
 
         cardPanel.add(usernamePanel, "U");
     }
 
-    // your UI, but dynamic categories
+    // category panel------------------------------------------------------------------------------------------------
     private void createGenrePanel() {
         genrePanel = new JPanel(new GridBagLayout());
         genrePanel.setBackground(new Color(74, 74, 74));
@@ -164,7 +175,7 @@ public class CardLayoutFrame extends JFrame {
         genreGBC.insets = new Insets(10, 10, 10, 10);
         genreGBC.gridx = 0;
 
-        JLabel genreLabel = new JLabel("Select a Genre:");
+        JLabel genreLabel = new JLabel("Select a category:");
         genreLabel.setFont(new Font("Impact", Font.BOLD, 36));
         genreLabel.setForeground(Color.WHITE);
         genreGBC.gridy = 0;
@@ -172,12 +183,13 @@ public class CardLayoutFrame extends JFrame {
 
         categoryButtons = new JButton[categories.size()];
 
+        // loop creates a button for each category
+        // categories can be changed via .txt file
         for (int i = 0; i < categories.size(); i++) {
             String categoryName = categories.get(i);
 
             JButton btn = new JButton(categoryName);
 
-            // KEEP your UI style
             btn.setFont(new Font("Impact", Font.PLAIN, 24));
             btn.setPreferredSize(new Dimension(250, 60));
             btn.setBackground(new Color(107, 129, 150));
@@ -192,18 +204,32 @@ public class CardLayoutFrame extends JFrame {
             genrePanel.add(btn, genreGBC);
         }
 
-        cardPanel.add(genrePanel, "P"); // P = pick genre
+        cardPanel.add(genrePanel, "P");
     }
 
+    // game panel------------------------------------------------------------------------------------------------
     private void createGamePanel() {
         gamePanel = new JPanel(new BorderLayout());
         gamePanel.setBackground(new Color(74, 74, 74));
 
-        questionLabel = new JLabel("Question", SwingConstants.CENTER);
-        questionLabel.setFont(new Font("Arial", Font.BOLD, 26));
+        // html text-align since our questions kept trailing off the page
+        questionLabel = new JLabel("<html><div style='text-align: center;'>Question</div></html>", SwingConstants.CENTER);
+        questionLabel.setFont(new Font("Impact", Font.PLAIN, 26));
         questionLabel.setForeground(Color.WHITE);
         questionLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         gamePanel.add(questionLabel, BorderLayout.NORTH);
+
+        // timer label. starts at 10 seconds
+        timerLabel = new JLabel("Time: 10", SwingConstants.CENTER);
+        timerLabel.setFont(new Font("Impact", Font.PLAIN, 28));
+        timerLabel.setForeground(new Color(100, 200, 100)); // green
+        timerLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+
+        JPanel northPanel = new JPanel(new BorderLayout());
+        northPanel.setBackground(new Color(74, 74, 74));
+        northPanel.add(questionLabel, BorderLayout.CENTER);
+        northPanel.add(timerLabel, BorderLayout.SOUTH);
+        gamePanel.add(northPanel, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel(new GridLayout(2, 2, 12, 12));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
@@ -211,21 +237,55 @@ public class CardLayoutFrame extends JFrame {
 
         for (int i = 0; i < 4; i++) {
             optionButtons[i] = new JButton("Option " + (i + 1));
-            optionButtons[i].setFont(new Font("Arial", Font.PLAIN, 20));
+            optionButtons[i].setFont(new Font("Impact", Font.PLAIN, 20));
             optionButtons[i].addActionListener(new OptionButtonHandler(i));
             buttonPanel.add(optionButtons[i]);
         }
 
         gamePanel.add(buttonPanel, BorderLayout.CENTER);
 
+        // override to end game early
         nextButton = new JButton("Go to Results");
-        nextButton.setFont(new Font("Arial", Font.PLAIN, 22));
+        nextButton.setFont(new Font("Impact", Font.PLAIN, 22));
         gamePanel.add(nextButton, BorderLayout.SOUTH);
 
         cardPanel.add(gamePanel, "G");
     }
 
-    // FIXED: correct name + only add once + correct layout order
+    // timer method------------------------------------------------------------------------------------------------
+    private void startTimer() {
+        if (questionTimer != null && questionTimer.isRunning()) {
+            questionTimer.stop();
+        }
+
+        timeRemaining = 10;
+        timerLabel.setText("Time: " + timeRemaining);
+        timerLabel.setForeground(new Color(100, 200, 100)); // reset to green
+
+        // 1 second timer for time remaining minus 1
+        questionTimer = new javax.swing.Timer(1000, e -> {timeRemaining--; timerLabel.setText("Time: " + timeRemaining);
+
+            // turns orange at 5 seconds left
+            if (timeRemaining <= 5) {
+                timerLabel.setForeground(new Color(255, 165, 0));
+            }
+            // red at 3 seconds left
+            if (timeRemaining <= 3) {
+                timerLabel.setForeground(new Color(220, 50, 50));
+            }
+
+            if (timeRemaining <= 0) {
+                questionTimer.stop();
+                JOptionPane.showMessageDialog(null, "Time's up!");
+                currentQuestionIdx++;
+                loadNextQuestion();
+            }
+        });
+
+        questionTimer.start();
+    }
+
+    // result panel------------------------------------------------------------------------------------------------
     private void createResultPanel() {
         resultPanel = new JPanel(new GridBagLayout());
         resultPanel.setBackground(new Color(74, 74, 74));
@@ -248,6 +308,7 @@ public class CardLayoutFrame extends JFrame {
         resultsGBC.gridy = 1;
         resultPanel.add(scoreLabel, resultsGBC);
 
+        // play again button takes you to categories panel
         JButton playAgainButton = new JButton("Play Again");
         playAgainButton.setFont(new Font("Impact", Font.PLAIN, 24));
         playAgainButton.setPreferredSize(new Dimension(200, 60));
@@ -256,6 +317,7 @@ public class CardLayoutFrame extends JFrame {
         playAgainButton.setOpaque(true);
         playAgainButton.setBorderPainted(false);
 
+        // change username allows you to change username and play again
         JButton changeUsernameButton = new JButton("Change Username");
         changeUsernameButton.setFont(new Font("Impact", Font.PLAIN, 24));
         changeUsernameButton.setPreferredSize(new Dimension(250, 60));
@@ -264,6 +326,7 @@ public class CardLayoutFrame extends JFrame {
         changeUsernameButton.setOpaque(true);
         changeUsernameButton.setBorderPainted(false);
 
+        // panel for both buttons
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         bottomPanel.setBackground(new Color(74, 74, 74));
         bottomPanel.add(playAgainButton);
@@ -283,16 +346,16 @@ public class CardLayoutFrame extends JFrame {
         cardPanel.add(resultPanel, "R");
     }
 
-    // labels we update at runtime
+    // post-runtime label updates
     private JLabel resultTitleLabel;
     private JLabel resultScoreLabel;
 
-    // ---------------- LOGIC ----------------
 
+    //logic stuff------------------------------------------------------------------------------------------------
     private void loadNextQuestion() {
         if (questions == null || questions.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Pick a category first.");
-            cardLayout.show(cardPanel, "P"); // FIX: genre panel is "P"
+            cardLayout.show(cardPanel, "P");
             return;
         }
 
@@ -302,13 +365,15 @@ public class CardLayoutFrame extends JFrame {
         }
 
         Question q = questions.get(currentQuestionIdx);
-
-        questionLabel.setText("[" + selectedCategory + "] Q" + (currentQuestionIdx + 1) + ": " + q.getText());
+        questionLabel.setText("<html><div style='text-align: center;'>[" + selectedCategory + "] Q"
+                + (currentQuestionIdx + 1) + ": " + q.getText() + "</div></html>");
 
         for (int i = 0; i < 4; i++) {
             optionButtons[i].setText(q.getOptions().get(i));
             optionButtons[i].setEnabled(true);
         }
+
+        startTimer();
     }
 
     private void endGame() {
@@ -325,7 +390,7 @@ public class CardLayoutFrame extends JFrame {
         cardLayout.show(cardPanel, "R");
     }
 
-    // ---------------- HANDLERS ----------------
+    // event handlers------------------------------------------------------------------------------------------------
 
     private class ButtonHandler implements ActionListener {
         @Override
@@ -382,6 +447,10 @@ public class CardLayoutFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            // stops the timer if an answer is selected
+            if (questionTimer != null && questionTimer.isRunning()) {
+                questionTimer.stop();
+            }
             if (questions == null || currentQuestionIdx >= questions.size()) {
                 endGame();
                 return;
