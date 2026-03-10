@@ -1,69 +1,67 @@
 package Week4;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.*;
+import java.util.*;
 
 public class QuestionLoader {
-    public void readFile() {
-        FileReader fileReader = null;
-        try {
-            fileReader = new FileReader("/Users/claykim/Desktop/ECE4319/Week_1/src/Week4/questions.txt");
 
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            int readerCount = 0;
+    private final String filePath;
 
-            String line = "";
-            while (true) {
-                line = bufferedReader.readLine();
-                if (line == null) {
-                    break;
-                }
-                readerCount++;
-                System.out.println(readerCount + ": " + line);
-            }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public QuestionLoader(String filePath) {
+        this.filePath = filePath;
     }
 
-    HashMap<Integer, ArrayList<String>> map = new HashMap<>();
+    // category -> list of questions (in file order)
+    public Map<String, List<Question>> loadByCategory() {
+        Map<String, List<Question>> map = new LinkedHashMap<>(); // keeps category order
+        String currentCategory = null;
 
-    public void readQuestions() {
-        try {
-            FileReader fileReader = null;
-            fileReader = new FileReader("/Users/claykim/Desktop/ECE4319/Week_1/src/Week4/questions.txt");
-
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            int readerCount = 0;
-
-            String line = "";
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             while (true) {
-                line = bufferedReader.readLine();
-                if (line == null) {
-                    break;
-                }
-                System.out.println(readerCount + ": " + line);
-                int questionNumber = readerCount / 5 + 1;
-                if (questionNumber % 5 == 0) {
-                    map.put(questionNumber, new ArrayList<>());
-                }
-                map.get(questionNumber).add(line);
+                String line = nextNonEmptyLine(br);
+                if (line == null) break;
 
-                readerCount++;
+                if (line.startsWith("Category:")) {
+                    currentCategory = line.substring("Category:".length()).trim();
+                    map.putIfAbsent(currentCategory, new ArrayList<>());
+                    continue;
+                }
+
+                // If we get here, line is a question text
+                if (currentCategory == null) {
+                    throw new RuntimeException("Question found before any Category: line.");
+                }
+
+                String qText = line;
+                String o1 = nextNonEmptyLine(br);
+                String o2 = nextNonEmptyLine(br);
+                String o3 = nextNonEmptyLine(br);
+                String o4 = nextNonEmptyLine(br);
+                String correctLine = nextNonEmptyLine(br);
+
+                if (o1 == null || o2 == null || o3 == null || o4 == null || correctLine == null) {
+                    throw new RuntimeException("Malformed question block under category: " + currentCategory);
+                }
+
+                int correctIndex = Integer.parseInt(correctLine.trim());
+
+                map.get(currentCategory).add(
+                        new Question(qText, List.of(o1, o2, o3, o4), correctIndex, currentCategory)
+                );
             }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to read: " + filePath, e);
         }
+
+        return map;
     }
 
-
-
+    private String nextNonEmptyLine(BufferedReader br) throws IOException {
+        String line;
+        while ((line = br.readLine()) != null) {
+            line = line.trim();
+            if (!line.isEmpty()) return line;
+        }
+        return null;
+    }
 }
