@@ -1,40 +1,283 @@
 Category: History
-Question 1: What do we refer to BST in 4319 ?
-British Summer Time
-Breadth Search Tree
-Binary Search Tree
-None of above
+How many colonies were there in the United States?
+11
+10
+13
+9
 2
-Question 2: Which class belongs to Java Swing?
-NumberFormatException
-String
-Graphics
-None of above
-2
-Category: Sports
-Question 3: What is the capital of France?
-Paris
-London
-Berlin
-Rome
+
+What year did the Louisiana Purchase take place?
+1803
+1911
+1813
+1823
 0
-Question 4: Which planet is known as the Red Planet?
-Earth
-Venus
-Mars
-Jupiter
+
+In the Japanese feudal era, what was a Ronin?
+A Banished Samurai
+A Young Samurai 
+A Samurai with no Master
+An Archer
+2
+
+Who was the first President of the United States?
+George Washington
+John Adams
+Thomas Jefferson
+Benjamin Franklin
+0
+
+Which empire built the Colosseum?
+Greek Empire
+Ottoman Empire
+Byzantine Empire
+Roman Empire
+3
+
+What year did World War II end?
+1943
+1944
+1945
+1946
+2
+
+Who wrote the Declaration of Independence?
+George Washington
+Benjamin Franklin
+Thomas Jefferson
+John Hancock
+2
+
+Which country did the United States buy Alaska from?
+Canada
+Britain
+France
+Russia
+3
+
+What ship sank on its maiden voyage in 1912?
+The Lusitania
+The Britannic
+The Titanic
+The Olympic
+2
+
+In what year did the Berlin Wall fall?
+1985
+1987
+1989
+1991
+2
+
+Category: Sports
+Which country won the 2018 FIFA World Cup?
+France
+Brazil
+Germany
+Argentina
+0
+
+How many players are on a basketball team on the court at one time?
+4
+5
+6
+7
+1
+
+In tennis, what is the term for a score of 40-40?
+Tiebreak
+Deuce
+Advantage
+Match point
+1
+
+How many rings are on the Olympic flag?
+4
+6
+5
+3
+2
+
+Which sport is played at Wimbledon?
+Cricket
+Badminton
+Squash
+Tennis
+3
+
+How many points is a touchdown worth in American football?
+4
+7
+3
+6
+3
+
+Which country invented the sport of basketball?
+England
+Canada
+United States
+Australia
+2
+
+How many holes are played in a standard round of golf?
+9
+18
+27
+36
+1
+
+What is the diameter of a basketball hoop in inches?
+16
+18
+20
+22
+1
+
+In which sport would you perform a slam dunk?
+Volleyball
+Water polo
+Basketball
+Handball
 2
 Category: Entertainment
-Question 1: Entertainmant
-a
-b
-c
-d
+Which movie won the first ever Academy Award for Best Picture?
+Sunrise
+The Jazz Singer
+Wings
+Metropolis
+2
+
+Who played Iron Man in the Marvel Cinematic Universe?
+Chris Evans
+Robert Downey Jr.
+Chris Hemsworth
+Mark Ruffalo
+1
+
+Which TV show features the fictional city of Pawnee, Indiana?
+The Office
+Brooklyn Nine-Nine
+Parks and Recreation
+Community
+2
+
+What is the highest grossing film of all time?
+Avengers Endgame
+Titanic
+Avatar
+Star Wars
+2
+
+Which artist released the album Thriller?
+Prince
+Madonna
+Michael Jackson
+David Bowie
+2
+
+What color is the dress worn by Cinderella in the Disney animated film?
+Yellow
+Pink
+Blue
+White
+2
+
+Which streaming service produced the show Stranger Things?
+Hulu
+HBO Max
+Disney+
+Netflix
+3
+
+Who voiced Woody in the Toy Story franchise?
+Tom Hanks
+Tim Allen
+Billy Crystal
+John Goodman
 0
+
+Which band was Beyonce a member of before going solo?
+TLC
+Destiny's Child
+En Vogue
+Salt-N-Pepa
+1
+
+What is the name of the fictional kingdom in Frozen?
+Narnia
+Arendelle
+Eldorado
+Agrabah
+1
+
 Category:General
-Question 1: what?
-e
-f
-g
-h
-0
+What is the chemical symbol for gold?
+Ag
+Fe
+Au
+Pb
+2
+
+How many continents are there on Earth?
+5
+6
+7
+8
+2
+
+What is the largest ocean on Earth?
+Atlantic
+Indian
+Arctic
+Pacific
+3
+
+How many sides does a hexagon have?
+5
+6
+7
+8
+1
+
+What is the fastest land animal?
+Lion
+Cheetah
+Leopard
+Horse
+1
+
+How many bones are in the adult human body?
+196
+206
+216
+226
+1
+
+What planet is closest to the sun?
+Venus
+Earth
+Mars
+Mercury
+3
+
+What is the hardest natural substance on Earth?
+Gold
+Iron
+Diamond
+Quartz
+2
+
+How many seconds are in an hour?
+360
+1800
+3600
+7200
+2
+
+What is the most spoken language in the world?
+English
+Spanish
+Hindi
+Mandarin Chinese
+3
+
